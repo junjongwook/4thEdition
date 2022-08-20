@@ -2,6 +2,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="dao" class="sample.spring.chapter01.bankapp.FixedDepositDao" />
+
 	<bean id="controller"
 		class="sample.spring.chapter01.bankapp.FixedDepositController">
 		<property name="fixedDepositService" ref="service" />
@@ -11,6 +13,4 @@
 		class="sample.spring.chapter01.bankapp.FixedDepositService">
 		<property name="fixedDepositDao" ref="dao" />
 	</bean>
-
-	<bean id="dao" class="sample.spring.chapter01.bankapp.FixedDepositDao" />
 </beans>
