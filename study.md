@@ -167,4 +167,21 @@
 
 - parent bean 이 추상 bean 이 필요는 없다.
 
+- 디버그(-g 옵션)나 '파라미터 이름 발견'(-paramters) 플래그 옵션을 활성화해 클래스를 컴파일할 때 만들어지는 .class 파일의 크기는 (옵션을 활성화하지 않았을 때보다) 크기가 약간 더 크다. 하지만 애플리케이션의 실행 시점 성능은 아무 영향이 없다. 다만 클래스를 메모리로 읽는 시간(loading time)은 약간 더 길어진다.
+
+- BeanWrapperImpl 클래스는 몇 가지 내장 프로퍼티 에디터를 스프링 컨테이너에 등록한다.
+    - 스프링 컨테이너에는 CustomCollectionEditor, CustomMapEditor, CurrentEditor, ByteArrayPropertyEditor, CharacterEditor가 기본적으로 등록된다.
+    - CustomDateEditor는 스프링 컨테이너에 등록되지 않는다.
+
+- 프로퍼티 에디터를 스프링 컨테이너에 등록하기 위해 스프링의 CustomEditorConfigurer 특별 빈을 사용할 수 있다.
+    - CustomEditorConfigurer 클래스는 스프링의 BeanFactoryPostProcessor 인터페이스를 구현하고, 스프링 컨테이너는 자동으로 CustomEditorConfigurer를 감지해 실행한다.
+
+### 프로퍼티 에디터는 스프링 컨테이너에 다음과 같이 등록한다.
+    1. 스프링의 PropertyEditorRegistrar 인터페이스를 구현한 클래스를 만든다. 클래스는 스프링 컨테이너에 프로퍼티 에디터를 등록한다.
+    2. XML 파일에 PropertyEditorRegistrar 구현을 스프링 빈으로 등록한다.
+    3. XML 파일에 스프링 CustomEditorConfigurer 특별 빈을 설정한다. 이때 1단계와 2단계에서 만든 PropertyEditorRegistrar 구현에 대한 참조를 지정한다.
+
+- XML 파일의 빈 정의를 덜 번잡하게 만들기 위해 스프링은 p와 c라는 이름공간으로 빈 프로퍼티와 생성자 인수값을 지정할 수 있다.
+    - p와 c 이름공간은 <property>와 <construct-arg> 원소를 대신한다.
+
 
