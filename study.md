@@ -291,3 +291,46 @@
 - 빈 사이의 의존 관계가 명시적으로 문서화된 애플리케이션은 더 쉽게 이해하고 유지보수할 수 있다. 
 - 대규모 애플리케이션에서는 자동 연결을 권장하지 않는다.
 
+### 스프링 컨테이너 빈 인스턴스 생성과 의존 관계 주입
+    1. 스프링 컨테이너는 빈 클래스의 생성자를 호출해서 빈을 생성한다.
+    2. 빈의 세터 메서드를 호출해서 빈 프로퍼티를 설정한다.
+    3. 빈 프로퍼티가 설정된 후 스프링 컨테이너가 빈을 완전히 초기화하기 전에 커스텀 초기화 로직(파일을 열거나 데이터베이스 연결을 여는 등)을 실행하려면 초기화 메서드의 이름을 <bean> 엘리먼트의 init-method 속성값으로 지정한다.
+    4. 빈 인스턴스를 포함한 스프링 컨테이너가 제거되기 직전에 커스텀 정리 로직을 실행하려면 <bean> 엘리먼트의 destory-method 속성값에 원하는 정리 메서드의 이름을 지정한다.
+
+- <bean> 엘리먼트의 init-memthod 와 destroy-method 속성으로 지정되는 초기화와 정리 메서드가 인수를 받으면 안 되지만, 예외를 던질 수는 있다.
+
+- 스프링의 ConfigurableApplicationContext(ApplicationContext)의 하위 인터페이스에는 JVM에게 종료 훅을 등록할 수 있는 registerShutdownHook 메서드가 들어있다.
+
+- registerShutdownHook 의 대안으로 ConfigurableApplicationContext의 close 메서드를 사용하는 방법도 있다. 이 방법을 사용하면 명시적으로 ApplicationContext 를 닫을 수 있다.
+
+- 프로토타입 스코프 빈의 경우 스프링 컨테이너가 destroy-method 속성을 무시한다. 
+    - 스프링 컨테이너가 destroy-method를 무시하는 이유는 ApplicationContext에서 프로토타입 빈을 얻어낸 객체가 자신이 사용한 프로토타입 스코프 빈의 해제 메서드를 명시적으로 호출할 책임을 지도록 스프링 컨테이너가 원하기 때문이다.
+
+- 프로토타입과 싱글턴 스코프 빈의 생애주기는 같다. 다만 스프링 컨테이너가 프로토타입 스코프 빈 인스턴스 정리 메서드(destory-method 속성으로 지정)를 호출하지 않는다는 점에서 차이가 있다.
+
+- <bean> 엘리먼트의 init-method나 destroy-method를 사용해 커스텀 초기화와 정리 메서드를 지정하는 대신, 스프링의 InitializingBean과 DisposableBean 생애주기 인터페이스를 사용할 수도 있다.
+
+- ApplicationContextAware 생애주기 인터페이스와 마찬가지로, InitializingBean이나 DisposableBean을 구현하면 스프링과 밀접하게 연관되므로 가능하면 인터페이스 구현을 피해야 한다.
+
+- JSR 250 (자바 플랫폼 공통 애너테이션)에는 자바 기술에서 사용하는 표준 애너테이션 정의가 들어 있다.
+
+- 자바 9부터 @PostConstruct와 @PreDestroy는 더이상 자바 SE에 포함하지 않는다.
+
+- BeanPostProcessor 인터페이스를 구현하는 빈은 특별한 유형의 빈이다. 스프링 컨테이너는 BeanPostProcessor 빈을 자동으로 감지해서 실행한다.
+    - Object postProcessorBeforeInitialization(Object bean, String beanName) : 이 메서드는 빈 인스턴스의 초기화 메서드가 호출되기 전에 호출된다.
+    - Object postProcessorAfterInitialization(Object bean, String beanName) : 이 메서드는 빈 인스턴스의 초기화 메서드가 호출된 다음에 호출된다.
+
+- BeanPostProcessor 빈의 빈 정의에서 빈을 지연 생성하도록 설정하면 스프링 컨테이너가 지연 초기화 설정을 무시하고 XML 파일에 정의된 다른 모든 싱글턴 스코프 빈보다 먼저 BeanPostProcessor 빈을 생성한다.
+
+- BeanFactoryPostProcessor 인터페이스를 구현한 빈이 BeanPostProcessor 인터페이스를 구현한 빈보다 먼저 생성된다.
+
+- 스프링 컨테이너가 BeanPostProcessor 구현을 다른 BeanPostProcessor 구현에 적용하지 않는다.
+
+- 빈 프로퍼티의 세터 메서드에 스프링 @Required를 설정하면, 스프링의 RequiredAnnotationBeanPostProcessor(이 클래스는 BeanPostProcessor를 구현한다)는 빈 프로퍼티가 XML에서 제대로 설정되었는지 검사한다.
+
+- RequiredAnnotationBeanPostProcessor 는 스프링 컨테이너에 자동으로 등록되지 않으므로 XML 파일 안에서 명시적으로 등록되어야 한다.
+
+- RequiredAnnotationBeanPostProcessor 는 빈 프로퍼티가 빈 정의에 설정되었는지만 검사한다. null 로 설정되어도 설정된 것으로 처리한다.
+
+- 프로퍼티 위치 지정자 (property placeholder) : ${<프로퍼티 파일에 있는 프로퍼티 이름>}
+
