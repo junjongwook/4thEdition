@@ -334,3 +334,23 @@
 
 - 프로퍼티 위치 지정자 (property placeholder) : ${<프로퍼티 파일에 있는 프로퍼티 이름>}
 
+- SpEL : Spring Expression Language
+
+- @Service, @Controller, @Repository 애너테이션이 @Component로 메타(meta) 애너테이션되어 있다.
+
+- @Service는 스프링 컨테이너에 빈을 어떤 이름으로 등록할지 지정하는 value 속성을 받는다.
+    - value 속성은 <bean> 엘리먼트의 id 속성과 같은 역할을 한다.
+
+- 빈 이름을 지정하지 않으면 스프링은 클래스 이름에서 첫 번째 글자를 소문자로 바꾼 이름을 빈 이름으로 사용한다.
+
+- 스프링의 클래스경로 스캐닝(classpath scanning)을 활성화하면 스프링 컨테이너는 @Component, @Controller, @Service, @Repository를 설정한 빈 클래스를 자동으로 등록한다.
+
+- 스프링의 클래스경로 스캐닝을 활성화하려면 스프링 context 스키마에 <component-scan> 엘리먼트를 사용한다.
+    - base-package 를 이용하여 대상을 지정한다. 지정은 package 시작 명으로 하고, 콤마(,)를 이용해서 여러개로 등록할 수 있다.
+    - 클래스를 걸러내고 싶다면 resource-pattern 속성을 이용하는데, default sms **/*.class 이다.
+    - <include-filter>, <exclude-filter>를 이용하면 포함할, 제외할 클래스를 지정할 수 있다.
+
+- 애너테이션을 설정한 빈 클래스에서는 @Autowired, @Inject 등의 애너테이션을 사용해 의존 관계를 기술한다.
+
+- @Autowired를 생성자 수준, 메서드 수준, 필드 수준에서 사용할 수 있다.
+
